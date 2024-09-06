@@ -15,22 +15,25 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useNavigate } from 'react-router-dom'
 import Roadmap from './Roadmap'
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth, useUser } from '@clerk/clerk-react';
 
 export default function HomePage() {
   const [username, setUsername] = useState('Educator')
   const navigate = useNavigate();
-  const { logout, user } = useAuth0();
+  const { signOut } = useAuth();
+  const { user } = useUser();
 
   useEffect(() => {
-    // Update username from Auth0 user object
-    if (user && user.name) {
-      setUsername(user.name)
+    // Update username from Clerk user object
+    if (user && user.fullName) {
+      setUsername(user.fullName)
     }
   }, [user])
 
   const handleLogout = () => {
-    logout({ returnTo: window.location.origin });
+    signOut().then(() => {
+      navigate('/');
+    });
   }
 
   const handleEditProfile = () => {
