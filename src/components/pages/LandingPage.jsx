@@ -6,11 +6,19 @@ import { Link as ScrollLink } from 'react-scroll';
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu } from "lucide-react"
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth0 } from '@auth0/auth0-react';
+import { useAuth, SignInButton, SignUpButton } from '@clerk/clerk-react';
 
 const ExamManagementLandingPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSignedIn) {
+      navigate('/dashboard');
+    }
+  }, [isSignedIn, navigate]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,15 +47,6 @@ const ExamManagementLandingPage = () => {
     </ScrollLink>
   );
 
-  const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/dashboard');
-    }
-  }, [isAuthenticated, navigate]);
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-indigo-900 text-white">
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
@@ -70,7 +69,7 @@ const ExamManagementLandingPage = () => {
             <NavItem to="contact" isScrolled={isScrolled}>Contact Us</NavItem>
           </div>
           <div className="hidden md:flex space-x-4">
-            {isAuthenticated ? (
+            {isSignedIn ? (
               <>
                 <Link to="/profile">
                   <Button variant="outline" size="lg" className={`font-semibold ${
@@ -79,43 +78,46 @@ const ExamManagementLandingPage = () => {
                       : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
                   }`}>Profile</Button>
                 </Link>
-                <Button 
-                  size="lg" 
-                  className={`font-semibold ${
-                    isScrolled
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-white text-blue-600 hover:bg-blue-100'
-                  }`}
-                  onClick={() => logout({ returnTo: window.location.origin })}
-                >
-                  Logout
-                </Button>
+                <Link to="/dashboard">
+                  <Button 
+                    size="lg" 
+                    className={`font-semibold ${
+                      isScrolled
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-white text-blue-600 hover:bg-blue-100'
+                    }`}
+                  >
+                    Dashboard
+                  </Button>
+                </Link>
               </>
             ) : (
               <>
-                <Button 
-                  variant="outline" 
-                  size="lg" 
-                  className={`font-semibold ${
-                    isScrolled 
-                      ? 'text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white' 
-                      : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
-                  }`}
-                  onClick={() => loginWithRedirect({ screen_hint: 'signup' })}
-                >
-                  Sign Up
-                </Button>
-                <Button 
-                  size="lg" 
-                  className={`font-semibold ${
-                    isScrolled
-                      ? 'bg-blue-600 text-white hover:bg-blue-700'
-                      : 'bg-white text-blue-600 hover:bg-blue-100'
-                  }`}
-                  onClick={() => loginWithRedirect()}
-                >
-                  Login
-                </Button>
+                <SignUpButton mode="modal">
+                  <Button 
+                    variant="outline" 
+                    size="lg" 
+                    className={`font-semibold ${
+                      isScrolled 
+                        ? 'text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white' 
+                        : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
+                    }`}
+                  >
+                    Sign Up
+                  </Button>
+                </SignUpButton>
+                <SignInButton mode="modal">
+                  <Button 
+                    size="lg" 
+                    className={`font-semibold ${
+                      isScrolled
+                        ? 'bg-blue-600 text-white hover:bg-blue-700'
+                        : 'bg-white text-blue-600 hover:bg-blue-100'
+                    }`}
+                  >
+                    Login
+                  </Button>
+                </SignInButton>
               </>
             )}
           </div>
@@ -132,7 +134,7 @@ const ExamManagementLandingPage = () => {
                 <NavItem to="exams" isScrolled={isScrolled}>Exams</NavItem>
                 <NavItem to="pricing" isScrolled={isScrolled}>Pricing</NavItem>
                 <NavItem to="contact" isScrolled={isScrolled}>Contact Us</NavItem>
-                {isAuthenticated ? (
+                {isSignedIn ? (
                   <>
                     <Link to="/profile" onClick={closeMenu}>
                       <Button variant="outline" size="lg" className={`font-semibold w-full ${
@@ -141,43 +143,46 @@ const ExamManagementLandingPage = () => {
                           : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
                       }`}>Profile</Button>
                     </Link>
-                    <Button 
-                      size="lg" 
-                      className={`font-semibold w-full ${
-                        isScrolled
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-white text-blue-600 hover:bg-blue-100'
-                      }`}
-                      onClick={() => logout({ returnTo: window.location.origin })}
-                    >
-                      Logout
-                    </Button>
+                    <Link to="/dashboard" onClick={closeMenu}>
+                      <Button 
+                        size="lg" 
+                        className={`font-semibold w-full ${
+                          isScrolled
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-white text-blue-600 hover:bg-blue-100'
+                        }`}
+                      >
+                        Dashboard
+                      </Button>
+                    </Link>
                   </>
                 ) : (
                   <>
-                    <Button 
-                      variant="outline" 
-                      size="lg" 
-                      className={`font-semibold w-full ${
-                        isScrolled 
-                          ? 'text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white' 
-                          : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
-                      }`}
-                      onClick={() => loginWithRedirect({ screen_hint: 'signup' })}
-                    >
-                      Sign Up
-                    </Button>
-                    <Button 
-                      size="lg" 
-                      className={`font-semibold w-full ${
-                        isScrolled
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
-                          : 'bg-white text-blue-600 hover:bg-blue-100'
-                      }`}
-                      onClick={() => loginWithRedirect()}
-                    >
-                      Login
-                    </Button>
+                    <SignUpButton mode="modal">
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className={`font-semibold w-full ${
+                          isScrolled 
+                            ? 'text-blue-600 border-blue-600 hover:bg-blue-600 hover:text-white' 
+                            : 'text-white border-white hover:bg-white hover:text-blue-600 bg-blue-600/30'
+                        }`}
+                      >
+                        Sign Up
+                      </Button>
+                    </SignUpButton>
+                    <SignInButton mode="modal">
+                      <Button 
+                        size="lg" 
+                        className={`font-semibold w-full ${
+                          isScrolled
+                            ? 'bg-blue-600 text-white hover:bg-blue-700'
+                            : 'bg-white text-blue-600 hover:bg-blue-100'
+                        }`}
+                      >
+                        Login
+                      </Button>
+                    </SignInButton>
                   </>
                 )}
               </nav>
@@ -199,13 +204,14 @@ const ExamManagementLandingPage = () => {
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">Create and Manage Exams with Ease</h1>
               <p className="text-xl sm:text-2xl mb-8 text-blue-200">Empower your teaching with our intuitive exam platform. Create, organize, and distribute MCQs effortlessly.</p>
               <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <Button 
-                  size="lg" 
-                  className="bg-yellow-400 text-blue-900 hover:bg-yellow-300 text-lg sm:text-xl px-6 sm:px-8 py-3 sm:py-4 font-bold shadow-lg w-full sm:w-auto"
-                  onClick={() => loginWithRedirect({ screen_hint: 'signup' })}
-                >
-                  Get Started
-                </Button>
+                <SignUpButton mode="modal">
+                  <Button 
+                    size="lg" 
+                    className="bg-yellow-400 text-blue-900 hover:bg-yellow-300 text-lg sm:text-xl px-6 sm:px-8 py-3 sm:py-4 font-bold shadow-lg w-full sm:w-auto"
+                  >
+                    Get Started
+                  </Button>
+                </SignUpButton>
                 <Button 
                   variant="outline" 
                   size="lg" 

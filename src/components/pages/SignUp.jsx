@@ -1,23 +1,22 @@
 import React, { useEffect } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth, SignUp as ClerkSignUp } from '@clerk/clerk-react';
 
-function SignUp() {
-  const { loginWithRedirect, isAuthenticated } = useAuth0();
+function SignUpPage() {
+  const { isSignedIn } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isSignedIn) {
       navigate('/dashboard');
-    } else {
-      loginWithRedirect({
-        screen_hint: 'signup',
-        appState: { returnTo: '/dashboard' }
-      });
     }
-  }, [isAuthenticated, loginWithRedirect, navigate]);
+  }, [isSignedIn, navigate]);
 
-  return <div>Redirecting to sign up...</div>;
+  return (
+    <div>
+      <ClerkSignUp redirectUrl="/dashboard" />
+    </div>
+  );
 }
 
-export default SignUp;
+export default SignUpPage;

@@ -1,25 +1,19 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { Auth0Provider } from '@auth0/auth0-react'
+import { ClerkProvider } from '@clerk/clerk-react'
 import App from './App.jsx'
 import './index.css'
 
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!clerkPubKey) {
+  throw new Error("Missing Clerk Publishable Key")
+}
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <Auth0Provider
-      domain={process.env.domain || ''}
-      clientId={process.env.clientId || ''}
-      authorizationParams={{
-        redirect_uri: window.location.origin
-      }}
-      onRedirectCallback={(appState) => {
-        console.log('Auth0 redirect callback', appState);
-      }}
-      onError={(error) => {
-        console.error('Auth0 error', error);
-      }}
-    >
+    <ClerkProvider publishableKey={clerkPubKey}>
       <App />
-    </Auth0Provider>
+    </ClerkProvider>
   </StrictMode>,
 )
