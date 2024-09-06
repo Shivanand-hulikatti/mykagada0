@@ -15,7 +15,11 @@ function ProtectedRoute({ children }) {
   const { isSignedIn, isLoaded } = useAuth();
 
   if (!isLoaded) {
-    return <div>Loading...</div>;
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '24px', color: 'gray' }}>
+        <span>Loading...</span>
+      </div>
+    );
   }
 
   return isSignedIn ? children : <Navigate to="/login" />;
@@ -25,7 +29,9 @@ function App() {
   return (
     <>
     <ClerkLoading>
-      <div>Loading...</div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', fontSize: '24px', color: 'gray' }}>
+        <span>Loading...</span>
+      </div>
     </ClerkLoading>
     <ClerkLoaded>
       <Router>
